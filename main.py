@@ -1,3 +1,5 @@
+from collections import deque
+
 import uvicorn
 import logging
 import requests
@@ -34,6 +36,9 @@ app = FastAPI()
 config = load_config()
 llm = init_llm(api_key=config['openai']['api_key'])
 
+message_queue_cache = {}
+MAX_QUEUE_SIZE = config['girl_friend']['max_queue_size']
+
 
 @app.post("/")
 async def root(request: Request):
@@ -43,15 +48,23 @@ async def root(request: Request):
         qq = msg_obj.user_id
         logger.info(f"QQ:{qq}，Nickname -- {msg_obj.sender.nickname}：{msg_obj.raw_message}")
         if qq == config['girl_friend']['qq']:
-            logger.info("Received a message from girl friend")
-            answer = llm_answer(msg_obj.raw_message, llm, config['girl_friend']['system_prompt'])
+            msg = msg_obj.raw_message
+            if qq not in message_queue_cache:
+                message_queue_cache[qq] = deque(maxlen=MAX_QUEUE_SIZE)
+            message_queue_cache[qq].append({"type": "user", "message": msg})
+            answer = llm_answer(msg, list(message_queue_cache[qq]), llm, config['girl_friend']['system_prompt'],
+                                config['girl_friend']['name'])
+            message_queue_cache[qq].append({"type": "llm", "message": answer})
             send_message(qq, answer)
-
+            logger.info(f"Queue for {qq}: cache message:{list(message_queue_cache[qq])}")
     except Exception:
         logger.error(f"data parse error:{data}")
 
 
-def llm_answer(question, client, prompt):
+def llm_answer(question, content, client, prompt, name):
+    # 将上下文整理为字符串
+    context = "\n".join([f"{msg['type']}:{msg['message']}" for msg in content])
+
     completion = client.chat.completions.create(
         model="qwen-max",
         messages=[
@@ -59,12 +72,16 @@ def llm_answer(question, client, prompt):
                 'role': 'system',
                 'content': prompt
             },
-            {'role': 'user', 'content': '楠楠对你说：' + question}
+            {
+                'role': 'user',
+                'content': f"{name}对你说：{question}。\n当前上下文：\n{context}"
+            }
         ]
     )
-    content = completion.choices[0].message.content
-    logging.info(f'LLM Response:：{content}')
-    return content
+    response_content = completion.choices[0].message.content
+    logging.info(f'LLM Response: {response_content}')
+    return response_content
+
 
 
 def send_message(qq, message):
