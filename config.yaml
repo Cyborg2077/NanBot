@@ -1,9 +1,9 @@
 send_msg_url: http://localhost:3000/send_private_msg
 openai:
-  api_key: XXX
+  api_key: YOUR_API_KEY
 
 girl_friend:
   name: 楠楠
-  qq: XXX
+  qq: QQ
   system_prompt: YOUR_PROMPT
   max_queue_size: 100
