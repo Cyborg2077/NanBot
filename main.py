@@ -14,7 +14,6 @@ from models import Msg
 from logging_config import setup_logging
 
 setup_logging()  # 设置日志
-
 logger = logging.getLogger(__name__)
 
 
@@ -81,7 +80,6 @@ def llm_answer(question, content, client, prompt, name):
     response_content = completion.choices[0].message.content
     logging.info(f'LLM Response: {response_content}')
     return response_content
-
 
 
 def send_message(qq, message):

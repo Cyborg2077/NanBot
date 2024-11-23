@@ -1,0 +1,75 @@
+# Python 缓存文件
+__pycache__/
+*.py[cod]
+*.pyo
+
+# 虚拟环境
+env/
+venv/
+ENV/
+.venv/
+.virtualenv/
+
+# IDE 配置文件
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# 操作系统生成的文件
+.DS_Store
+Thumbs.db
+
+# 日志文件
+*.log
+logs/
+*.out
+*.err
+
+# 数据库文件
+*.sqlite3
+*.db
+
+# 环境配置
+.env
+.env.*
+*.ini
+*.cfg
+*.yaml
+*.yml
+
+# Python 打包产物
+*.egg
+*.egg-info/
+dist/
+build/
+*.whl
+
+# 单元测试覆盖率文件
+.coverage
+*.coverage
+htmlcov/
+
+# MyPy 类型检查
+.mypy_cache/
+
+# Pytest 缓存
+.pytest_cache/
+
+# Jupyter Notebook 检查点
+.ipynb_checkpoints/
+
+# Celery
+celerybeat-schedule
+*.pid
+
+# 本地开发工具
+*.swp
+*.bak
+*.tmp
+
+# Docker 文件
+*.env
+docker-compose.override.yml
+
+# 如果使用了特定框架或库，考虑添加相关的忽略文件规则
