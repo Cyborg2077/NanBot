@@ -1,10 +1,10 @@
 import heapq
-import time
-import threading
 import logging
+import threading
+import time
 
 from app.config import setup_logging, load_config
-from app.llm import llm_answer, init_llm, llm_answer_delay_msg
+from app.llm import init_llm, llm_answer_delay_msg
 from app.messaging import send_message
 
 config = load_config()

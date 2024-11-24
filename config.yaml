@@ -1,9 +1,0 @@
-send_msg_url: http://localhost:3000/send_private_msg
-openai:
-  api_key: xxx
-
-girl_friend:
-  name: xxxx
-  qq: xxx
-  system_prompt: xxx
-  max_queue_size: 100
