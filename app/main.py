@@ -3,7 +3,6 @@ from fastapi import FastAPI
 from app.routes import router
 from app.config import load_config
 from app.llm import init_llm
-from app.routes import init_message_cache
 
 from app.config import setup_logging
 

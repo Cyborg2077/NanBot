@@ -1,14 +1,16 @@
 import json
+import logging
 import traceback
 from collections import deque
+
 from fastapi import APIRouter, Request
+
 from models.msg import Msg
 from .config import load_config
 from .delay_queue import DelayQueue
 from .function_call import function_definitions
-from .llm import llm_answer, LLM_CLIENT, init_llm, llm_received_delay_msg
-from .messaging import send_message
-import logging
+from .llm import LLM_CLIENT, init_llm, llm_received_delay_msg, llm_multi_answer
+from .messaging import send_message, send_multi_message
 
 logger = logging.getLogger(__name__)
 
@@ -37,12 +39,14 @@ async def root(request: Request):
         if qq not in message_queue_cache:
             message_queue_cache[qq] = deque(maxlen=MAX_QUEUE_SIZE)
         if qq == config['girl_friend']['qq']:
+            if qq not in message_queue_cache:
+                message_queue_cache[qq] = deque(maxlen=MAX_QUEUE_SIZE)
             msg = msg_obj.raw_message
             message_queue_cache[qq].append({"type": "user", "message": msg})
 
             # 调用大模型解析消息
             response = LLM_CLIENT.chat.completions.create(
-                model="qwen-plus",
+                model="qwen-max",
                 messages=[
                     {
                         "role": "system",
@@ -63,21 +67,21 @@ async def root(request: Request):
                 arguments = json.loads(response.choices[0].message.function_call.arguments)
 
                 if func_name == "add_delay_task":
+                    # 执行了 add_delay_task 方法
                     delay_queue.add_delay_task(**arguments)
+                    # 生成一个立即回复
                     answer = llm_received_delay_msg(msg, list(message_queue_cache[qq]), llm,
                                         config['girl_friend']['system_prompt'],
                                         config['girl_friend']['name'])
                     message_queue_cache[qq].append({"type": "llm", "message": answer})
                     send_message(qq, answer, config['send_msg_url'])
                     return
-
-            if qq not in message_queue_cache:
-                message_queue_cache[qq] = deque(maxlen=MAX_QUEUE_SIZE)
-            answer = llm_answer(msg, list(message_queue_cache[qq]), llm,
+            # 没有调用Function，生成普通回复
+            answer = llm_multi_answer(msg, list(message_queue_cache[qq]), llm,
                                 config['girl_friend']['system_prompt'],
                                 config['girl_friend']['name'])
             message_queue_cache[qq].append({"type": "llm", "message": answer})
-            send_message(qq, answer, config['send_msg_url'])
+            send_multi_message(qq, answer, config['send_msg_url'])
             logger.info(f"Queue for {qq}: cache message:{list(message_queue_cache[qq])}")
     except Exception as e:
         logger.error(f"data parse error:{data}, error: {e}")

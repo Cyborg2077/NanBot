@@ -36,6 +36,29 @@ def llm_answer(question, content, client, prompt, name):
     return response_content
 
 
+def llm_multi_answer(question, content, client, prompt, name):
+    context = "\n".join([f"{msg['type']}:{msg['message']}" for msg in content])
+    formatted_prompt = f"""{prompt}
+    请注意，你的回答应该由多条简短的独立的消息组成，每条消息之间使用换行符（\\n）分隔。确保每条消息都是一条完整的句子或段落。"""
+    completion = client.chat.completions.create(
+        model="qwen-max",
+        messages=[
+            {
+                'role': 'system',
+                'content': formatted_prompt
+            },
+            {
+                'role': 'user',
+                'content': f"{name}对你说：{question}。\n当前上下文：\n{context}"
+            }
+        ]
+    )
+    response_content = completion.choices[0].message.content
+    message_list = [msg.strip() for msg in response_content.strip().split('\n') if msg.strip()]
+    logger.info(f'LLM Response: {message_list}')
+    return message_list
+
+
 def llm_received_delay_msg(question, content, client, prompt, name):
     context = "\n".join([f"{msg['type']}:{msg['message']}" for msg in content])
 
