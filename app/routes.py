@@ -86,7 +86,7 @@ async def websocket_endpoint(websocket: WebSocket):
 
                     # 调用大模型解析消息
                     response = deps.llm_client.chat.completions.create(
-                        model="qwen-max",
+                        model=deps.config['openai']['module'],
                         messages=[
                             {
                                 "role": "system",

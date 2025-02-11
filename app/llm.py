@@ -15,7 +15,7 @@ def llm_answer(qq: str) -> str:
     请注意，你的回答应该由多条简短的独立的消息组成，每条消息之间使用换行符（\\n）分隔。确保每条消息都是一条完整的句子或段落。当你接收到多条消息时，若多条消息表达的意思相近，不必逐一回复"""
 
     completion = deps.llm_client.chat.completions.create(
-        model="qwen-max",
+        model=deps.config['openai']['module'],
         messages=[
             {
                 'role': 'system',
@@ -44,7 +44,7 @@ def llm_received_delay_msg(qq):
     """
 
     completion = deps.llm_client.chat.completions.create(
-        model="qwen-max",
+        model=deps.config['openai']['module'],
         messages=[
             {
                 'role': 'system',
@@ -77,7 +77,7 @@ def llm_answer_delay_msg(qq, question):
     )
 
     completion = deps.llm_client.chat.completions.create(
-        model="qwen-max",  # 使用你指定的模型
+        model=deps.config['openai']['module'],  # 使用你指定的模型
         messages=[
             {
                 'role': 'system',

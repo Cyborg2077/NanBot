@@ -5,6 +5,8 @@ oneBotApi:
 
 openai:
   api_key: YOUR_API_KEY
+  base_url: https://api.deepseek.com
+  module: deepseek-chat
 
 users:
   - qq: SELF_QQ

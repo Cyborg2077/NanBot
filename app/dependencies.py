@@ -17,7 +17,7 @@ class GlobalDependencies:
         if not cls.llm_client:
             cls.llm_client = OpenAI(
                 api_key=cls.config['openai']['api_key'],
-                base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
+                base_url=cls.config['openai']['base_url'],
             )
 
         if not cls.msg_cache:

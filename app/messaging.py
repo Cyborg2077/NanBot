@@ -9,7 +9,6 @@ logger = logging.getLogger(__name__)
 
 
 def send_message(qq, msg, private=True):
-    user_config = get_user_config(qq)
     if private:
         url = deps.config['oneBotApi']['send_private_msg']
         data_key = 'user_id'
@@ -30,7 +29,7 @@ def send_message(qq, msg, private=True):
                 }
             ]
         }
-        requests.post(url, data=json.dumps(data))
+        response = requests.post(url, data=json.dumps(data))
         logger.info(f"向 {qq} 发送消息：{msg}")
 
 

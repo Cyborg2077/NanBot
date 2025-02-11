@@ -19,7 +19,6 @@ class PrivateMsg(BaseModel):
     user_id: int
     time: int
     message_id: int
-    real_id: int
     message_seq: int
     message_type: str
     sender: Sender
@@ -36,7 +35,6 @@ class GroupMsg(BaseModel):
     user_id: int
     time: int
     message_id: int
-    real_id: int
     message_seq: int
     message_type: str
     sender: Sender
